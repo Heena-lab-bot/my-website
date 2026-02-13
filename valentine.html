@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you be my Galentine?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 50%, #f8c8d4 100%);
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating hearts background */
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 18px;
+            animation: float 7s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* Rose flowers */
+        .flower {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            z-index: 1;
+        }
+
+        .rose {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+        }
+
+        .rose::before {
+            content: '🌹';
+            font-size: 30px;
+            position: absolute;
+            animation: sway 4s ease-in-out infinite;
+        }
+
+        .rose.left::before {
+            animation-delay: 0s;
+        }
+
+        .rose.right::before {
+            animation-delay: 2s;
+        }
+
+        /* Lily flower (Lilium candidum) - using image */
+        .lily {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            z-index: 1;
+        }
+
+        .lily img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            animation: gentleSway 5s ease-in-out infinite;
+            
+        
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(-2deg) scale(1); }
+            50% { transform: rotate(2deg) scale(1.05); }
+        }
+
+        /* Main container */
+        .container {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 55px 70px;
+            border-radius: 40px;
+            box-shadow: 0 25px 70px rgba(200, 100, 120, 0.25);
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            border: 2px solid #ffd1dc;
+        }
+
+        h1 {
+            color: #d4729a;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 3px rgba(200, 100, 150, 0.2);
+            font-weight: 500;
+        }
+
+        .question-mark {
+            font-size: 3.5rem;
+            color: #ff9eb5;
+            animation: gentlePulse 2s ease-in-out infinite;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 90px;
+            padding: 15px 20px;
+        }
+
+        .btn {
+            padding: 14px 45px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-weight: 600;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ffb6c1, #ff9eb5);
+            color: #8b4557;
+            box-shadow: 0 6px 20px rgba(255, 160, 180, 0.4);
+            border: 2px solid #ffc0cb;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.08);
+            box-shadow: 0 10px 30px rgba(255, 150, 170, 0.6);
+            background: linear-gradient(135deg, #ffc0cb, #ffb6c1);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #dcdde1, #b8b8c8);
+            color: #6b6b7b;
+            box-shadow: 0 6px 20px rgba(180, 180, 200, 0.4);
+            border: 2px solid #e8e8f0;
+        }
+
+        .btn-no:hover {
+            transform: scale(1.08);
+            background: linear-gradient(135deg, #e8e8f0, #dcdde1);
+        }
+
+        /* Success message */
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffe4e9 0%, #ffd1dc 50%, #ffb6c1 100%);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .success-message.show {
+            display: flex;
+            animation: softFadeIn 0.8s ease;
+        }
+
+        @keyframes softFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .success-message h1 {
+            color: #c44569;
+            font-size: 3rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(180, 80, 120, 0.2);
+        }
+
+        .success-message .hearts {
+            font-size: 4.5rem;
+            margin: 15px 0;
+            animation: softHeartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes softHeartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .success-message .kiss {
+            font-size: 4rem;
+            margin: 10px 0;
+            animation: blowKiss 1s ease-in-out infinite;
+        }
+
+        @keyframes blowKiss {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(20px) rotate(25deg); }
+        }
+
+        .success-message .roses {
+            position: absolute;
+            font-size: 3.5rem;
+        }
+
+        .rose-1 { top: 8%; left: 8%; animation: float 5s ease-in-out infinite; }
+        .rose-2 { top: 12%; right: 8%; animation: float 5s ease-in-out infinite 0.5s; }
+        .rose-3 { bottom: 12%; left: 12%; animation: float 5s ease-in-out infinite 1s; }
+        .rose-4 { bottom: 8%; right: 12%; animation: float 5s ease-in-out infinite 1.5s; }
+        .rose-5 { top: 45%; left: 3%; animation: float 5s ease-in-out infinite 2s; }
+        .rose-6 { top: 45%; right: 3%; animation: float 5s ease-in-out infinite 2.5s; }
+
+        /* Lily decorations using image */
+        .lily-flower {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            z-index: 5;
+        }
+
+        .lily-flower img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            animation: gentleSway 5s ease-in-out infinite;
+        }
+
+        .lily-1 { top: 5%; left: 15%; animation: float 5s ease-in-out infinite 0.3s; }
+        .lily-2 { top: 8%; right: 18%; animation: float 5s ease-in-out infinite 0.8s; }
+        .lily-3 { bottom: 10%; left: 20%; animation: float 5s ease-in-out infinite 1.3s; }
+        .lily-4 { bottom: 5%; right: 15%; animation: float 5s ease-in-out infinite 1.8s; }
+
+        .success-message p {
+            color: #a85577;
+            font-size: 1.4rem;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        /* Decorative flowers around main container */
+        .decorative-flower {
+            position: absolute;
+            font-size: 1.8rem;
+            z-index: 5;
+        }
+
+        .flower-tl { top: -12px; left: -12px; }
+        .flower-tr { top: -12px; right: -12px; }
+        .flower-bl { bottom: -12px; left: -12px; }
+        .flower-br { bottom: -12px; right: -12px; }
+    </style>
+</head>
+<body>
+    <!-- Floating hearts background -->
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <!-- Decorative roses and lilies around the container -->
+    <div class="flower decorative-flower flower-tl">🌹</div>
+<div class="lily-flower lily-1"><img src="lili.png" alt="Lily"></div>
+    <div class="lily-flower lily-2"><img src="lili.png" alt="Lily"></div>
+    <div class="flower decorative-flower flower-br">🌹</div>
+
+    <!-- Main container -->
+    <div class="container" id="mainContainer">
+<img src="girl.jpeg" alt="Sweet Girl" class="puppy-gif" style="width: 70px; height: 110px; display: block; margin: 0 auto 10px;">
+        <h1>Will you be my Valentine?</h1>
+        <div class="buttons" id="buttonsDiv">
+            <button class="btn btn-yes" id="yesBtn" onclick="handleYes()">Yes</button>
+            <button class="btn btn-no" id="noBtn" onclick="handleNo()">No</button>
+        </div>
+    </div>
+
+    <!-- Success message overlay -->
+    <div class="success-message" id="successMessage">
+        <div class="roses rose-1">🌹</div>
+        <div class="roses rose-2">🌹</div>
+        <div class="roses rose-3">🌹</div>
+        <div class="roses rose-4">🌹</div>
+        <div class="roses rose-5">🌹</div>
+        <div class="roses rose-6">🌹</div>
+        <!-- Lilies in success message using image -->
+<div class="lily-flower lily-1"><img src="lili.png" alt="Lily"></div>
+        <div class="lily-flower lily-2"><img src="lili.png" alt="Lily"></div>
+        <div class="lily-flower lily-3"><img src="lili.png" alt="Lily"></div>
+        <div class="lily-flower lily-4"><img src="lili.png" alt="Lily"></div>
+        
+        <span class="kiss">😘💋</span>
+        <!--<span class="hearts">💖💕💖</span> -->
+        <h1>I knew it🥳🎉 <br>Thank you for being my Galentine!</h1>
+        <p>💕 You made me happiest person in this universe! 💕</p>
+        <span class="kiss">💋😘</span>
+    </div>
+
+    <script>
+        // Create floating hearts
+        function createHearts() {
+            const heartsBg = document.getElementById('heartsBg');
+            const hearts = ['💕', '💗', '💖', '💘', '❤️', '💝', '💌'];
+            
+            for (let i = 0; i < 25; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 6 + 's';
+                heart.style.fontSize = (Math.random() * 15 + 12) + 'px';
+                heartsBg.appendChild(heart);
+            }
+        }
+
+        // Handle No button click - move to random position without overlapping Yes
+        function handleNo() {
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            const buttonsDiv = document.getElementById('buttonsDiv');
+            
+            // Get Yes button's position relative to the buttons container
+            const yesBtnStyle = window.getComputedStyle(yesBtn);
+            const yesLeft = yesBtn.offsetLeft;
+            const yesTop = yesBtn.offsetTop;
+            const yesWidth = yesBtn.offsetWidth;
+            const yesHeight = yesBtn.offsetHeight;
+            
+            const noWidth = noBtn.offsetWidth;
+            const noHeight = noBtn.offsetHeight;
+            
+            // Extra padding to ensure no overlap
+            const padding = 25;
+            
+            // Define the "危险区域" (danger zone) where No button cannot go
+            // This is the area around and including the Yes button
+            const dangerZone = {
+                left: yesLeft - padding,
+                right: yesLeft + yesWidth + padding,
+                top: yesTop - padding,
+                bottom: yesTop + yesHeight + padding
+            };
+            
+            // Generate random position and check if it's in the danger zone
+            let foundPosition = false;
+            let attempts = 0;
+            let newX, newY;
+            
+            const maxX = buttonsDiv.offsetWidth - noWidth - 10;
+            const maxY = Math.max(0, buttonsDiv.offsetHeight - noHeight);
+            
+            while (!foundPosition && attempts < 100) {
+                // Generate random position within buttons container
+                newX = Math.random() * maxX;
+                newY = Math.random() * maxY;
+                
+                // Check if the new position overlaps with the danger zone
+                const noLeft = newX;
+                const noRight = newX + noWidth;
+                const noTop = newY;
+                const noBottom = newY + noHeight;
+                
+                // Check for overlap
+                const overlaps = !(
+                    noRight <= dangerZone.left ||
+                    noLeft >= dangerZone.right ||
+                    noBottom <= dangerZone.top ||
+                    noTop >= dangerZone.bottom
+                );
+                
+                if (!overlaps) {
+                    foundPosition = true;
+                }
+                attempts++;
+            }
+            
+            // Apply the new position
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+            
+            // Add a cute wiggle animation
+            noBtn.style.animation = 'wiggle 0.4s ease';
+            setTimeout(() => {
+                noBtn.style.animation = '';
+            }, 400);
+        }
+
+        // Handle Yes button click - show success message
+        function handleYes() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
+            
+            // Add celebration hearts and kisses
+            createCelebrationHearts();
+        }
+
+        // Create celebration hearts and kisses for success
+        function createCelebrationHearts() {
+            const successMessage = document.getElementById('successMessage');
+            const items = ['💕', '💗', '💖', '💘', '❤️', '💝', '🌹', '🥀', '😘', '💋'];
+            
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    const item = document.createElement('div');
+                    item.innerHTML = items[Math.floor(Math.random() * items.length)];
+                    item.style.position = 'absolute';
+                    item.style.left = Math.random() * 100 + '%';
+                    item.style.top = '-50px';
+                    item.style.fontSize = (Math.random() * 25 + 18) + 'px';
+                    item.style.animation = `gentleFall ${Math.random() * 3 + 2}s linear forwards`;
+                    item.style.zIndex = '101';
+                    successMessage.appendChild(item);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        item.remove();
+                    }, 5000);
+                }, i * 80);
+            }
+        }
+
+        // Add gentle animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes gentleFall {
+                to {
+                    transform: translateY(100vh) rotate(180deg);
+                    opacity: 0;
+                }
+            }
+            @keyframes wiggle {
+                0%, 100% { transform: rotate(0deg); }
+                25% { transform: rotate(-4deg); }
+                75% { transform: rotate(4deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        createHearts();
+    </script>
+</body>
+</html>
